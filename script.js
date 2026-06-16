@@ -4,6 +4,7 @@ const state = {
   bills: [],
   events: [],
   reminders: [],
+  recurringTasks: [],
   theme: "light",
   selectedDate: null,
   calendarMonth: new Date().getMonth(),
@@ -60,6 +61,7 @@ function renderAll() {
   renderDashboard();
   renderBills();
   renderReminders();
+  renderRecurringTasks();
   renderCalendar();
   updateTopInfo();
   setTheme();
@@ -153,6 +155,33 @@ function renderReminders() {
       </div>
     </li>
   `).join("") : "<li>No reminders yet</li>";
+}
+
+function renderRecurringTasks() {
+  const list = document.getElementById("recurringList");
+
+  list.innerHTML = state.recurringTasks.length ? state.recurringTasks.map(task => {
+    let repeatText = "";
+
+    if (task.type === "weekly") {
+      const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      repeatText = `Every week on ${days[task.day]}`;
+    } else {
+      repeatText = `Every month on day ${task.monthDay}`;
+    }
+
+    return `
+      <li>
+        <div>
+          <strong>${task.text}</strong><br />
+          <span>${repeatText}</span>
+        </div>
+        <div class="item-actions">
+          <button class="small-btn delete-btn" onclick="deleteRecurringTask('${task.id}')">Delete</button>
+        </div>
+      </li>
+    `;
+  }).join("") : "<li>No recurring tasks yet</li>";
 }
 
 function renderCalendar() {
@@ -352,14 +381,51 @@ function deleteReminder(id) {
   renderAll();
 }
 
+function addRecurringTask() {
+  const text = document.getElementById("recurringText").value.trim();
+  const type = document.getElementById("recurringType").value;
+  const day = document.getElementById("recurringDay").value;
+  const monthDay = document.getElementById("recurringMonthDay").value;
+
+  if (!text) return alert("Please enter a task name.");
+
+  if (type === "weekly" && day === "") {
+    return alert("Please choose a day of the week.");
+  }
+
+  if (type === "monthly" && (!monthDay || monthDay < 1 || monthDay > 31)) {
+    return alert("Please enter a valid day of the month from 1 to 31.");
+  }
+
+  state.recurringTasks.push({
+    id: getId(),
+    text,
+    type,
+    day: type === "weekly" ? Number(day) : null,
+    monthDay: type === "monthly" ? Number(monthDay) : null
+  });
+
+  saveState();
+  renderAll();
+
+  document.getElementById("recurringText").value = "";
+  document.getElementById("recurringMonthDay").value = "";
+}
+
+function deleteRecurringTask(id) {
+  state.recurringTasks = state.recurringTasks.filter(task => task.id !== id);
+  saveState();
+  renderAll();
+}
+
 function prevMonth() {
   state.calendarMonth--;
   if (state.calendarMonth < 0) {
     state.calendarMonth = 11;
     state.calendarYear--;
   }
-  renderCalendar();
   saveState();
+  renderCalendar();
 }
 
 function nextMonth() {
@@ -368,8 +434,8 @@ function nextMonth() {
     state.calendarMonth = 0;
     state.calendarYear++;
   }
-  renderCalendar();
   saveState();
+  renderCalendar();
 }
 
 function resetData() {
@@ -409,6 +475,7 @@ function initButtons() {
   document.getElementById("addBillBtn").addEventListener("click", addBill);
   document.getElementById("addEventBtn").addEventListener("click", addEvent);
   document.getElementById("addReminderBtn").addEventListener("click", addReminder);
+  document.getElementById("addRecurringBtn").addEventListener("click", addRecurringTask);
   document.getElementById("prevMonthBtn").addEventListener("click", prevMonth);
   document.getElementById("nextMonthBtn").addEventListener("click", nextMonth);
   document.getElementById("toggleThemeBtn").addEventListener("click", () => {
