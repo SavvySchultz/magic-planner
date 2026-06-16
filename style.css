@@ -30,18 +30,30 @@ body {
   color: var(--text);
   background: linear-gradient(135deg, var(--bg1), var(--bg2));
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
-.background-stars {
+.sparkles {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  opacity: 0.15;
-  background-image:
-    radial-gradient(circle at 20% 20%, white 1px, transparent 1px),
-    radial-gradient(circle at 80% 30%, white 1px, transparent 1px),
-    radial-gradient(circle at 40% 70%, white 1px, transparent 1px);
-  background-size: 200px 200px;
+  z-index: 0;
+}
+
+.sparkle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.9;
+  animation: floatUp 2.5s linear forwards;
+  box-shadow: 0 0 12px white;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-140px) scale(0); opacity: 0; }
 }
 
 .app {
@@ -96,6 +108,7 @@ h1 {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  gap: 12px;
 }
 
 .tabs {
@@ -105,7 +118,7 @@ h1 {
   margin-bottom: 20px;
 }
 
-.tab-btn, .primary-btn, .secondary-btn, .filter-btn, .danger-btn {
+.tab-btn, .primary-btn, .secondary-btn, .filter-btn, .danger-btn, .cute-btn {
   border: none;
   border-radius: 999px;
   padding: 12px 18px;
@@ -113,7 +126,7 @@ h1 {
   cursor: pointer;
 }
 
-.tab-btn, .secondary-btn, .filter-btn {
+.tab-btn, .secondary-btn, .filter-btn, .cute-btn {
   background: rgba(255,255,255,0.6);
   color: var(--text);
 }
@@ -146,6 +159,10 @@ h1 {
 .card {
   padding: 18px;
   margin-top: 18px;
+}
+
+.cute-card {
+  border: 1px dashed var(--accent);
 }
 
 .dashboard-grid {
