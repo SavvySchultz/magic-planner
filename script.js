@@ -1,4 +1,4 @@
-const STORAGE_KEY = "magic_planner_data_v1";
+const STORAGE_KEY = "magic_planner_data_v2";
 
 const state = {
   bills: [],
@@ -20,15 +20,21 @@ const quotes = [
   "Magic is made one day at a time."
 ];
 
+const cuteTasks = [
+  "Drink some water like a royal champion.",
+  "Stretch for 30 seconds and feel the sparkle.",
+  "Write one thing you’re proud of today.",
+  "Do one tiny task and call it a win.",
+  "Take a deep breath — you’re doing great."
+];
+
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
 function loadState() {
   const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    Object.assign(state, JSON.parse(saved));
-  }
+  if (saved) Object.assign(state, JSON.parse(saved));
 }
 
 function setTheme() {
@@ -70,6 +76,10 @@ function renderAll() {
 function updateTopInfo() {
   document.getElementById("todayDate").textContent = getTodayString();
   document.getElementById("motivationalQuote").textContent =
+    quotes[Math.floor(Math.random() * quotes.length)];
+  document.getElementById("dailyTask").textContent =
+    cuteTasks[Math.floor(Math.random() * cuteTasks.length)];
+  document.getElementById("dailyQuote").textContent =
     quotes[Math.floor(Math.random() * quotes.length)];
 }
 
@@ -123,29 +133,38 @@ function renderBills() {
 
   bills.sort((a, b) => a.dueDate.localeCompare(b.dueDate));
 
-  list.innerHTML = bills.length ? bills.map(bill => `
-    <li>
-      <div>
-        <strong>${bill.name}</strong><br />
-        $${Number(bill.amount).toFixed(2)} • Due: ${formatDate(bill.dueDate)}<br />
-        <span class="${bill.paid ? "paid-tag" : "unpaid-tag"}">
-          ${bill.paid ? "Paid" : "Unpaid"}
-        </span>
-      </div>
-      <div class="item-actions">
-        <button class="small-btn paid-btn" onclick="toggleBillPaid('${bill.id}')">
-          ${bill.paid ? "Mark Unpaid" : "Mark Paid"}
-        </button>
-        <button class="small-btn edit-btn" onclick="editBill('${bill.id}')">Edit</button>
-        <button class="small-btn delete-btn" onclick="deleteBill('${bill.id}')">Delete</button>
-      </div>
-    </li>
-  `).join("") : "<li>No bills yet</li>";
+  list.innerHTML = bills.length ? bills.map(bill => {
+    let repeatText = "One-time bill";
+    if (bill.repeatType === "weekly") {
+      repeatText = `Repeats weekly on ${["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][bill.repeatDay]}`;
+    } else if (bill.repeatType === "monthly") {
+      repeatText = `Repeats monthly on day ${bill.repeatMonthDay}`;
+    }
+
+    return `
+      <li>
+        <div>
+          <strong>${bill.name}</strong><br />
+          $${Number(bill.amount).toFixed(2)} • Due: ${formatDate(bill.dueDate)}<br />
+          <small>${repeatText}</small><br />
+          <span class="${bill.paid ? "paid-tag" : "unpaid-tag"}">
+            ${bill.paid ? "Paid" : "Unpaid"}
+          </span>
+        </div>
+        <div class="item-actions">
+          <button class="small-btn paid-btn" onclick="toggleBillPaid('${bill.id}')">
+            ${bill.paid ? "Mark Unpaid" : "Mark Paid"}
+          </button>
+          <button class="small-btn edit-btn" onclick="editBill('${bill.id}')">Edit</button>
+          <button class="small-btn delete-btn" onclick="deleteBill('${bill.id}')">Delete</button>
+        </div>
+      </li>
+    `;
+  }).join("") : "<li>No bills yet</li>";
 }
 
 function renderReminders() {
   const list = document.getElementById("reminderList");
-
   list.innerHTML = state.reminders.length ? state.reminders.map(reminder => `
     <li>
       <span>${reminder.text}</span>
@@ -212,18 +231,14 @@ function renderCalendar() {
     html += `
       <div class="day-cell" onclick="selectDay('${dateStr}')">
         <div class="day-number">${day}</div>
-        <div>
-          ${events.slice(0, 2).map(() => `<span class="day-dot"></span>`).join("")}
-        </div>
+        <div>${events.slice(0, 2).map(() => `<span class="day-dot"></span>`).join("")}</div>
       </div>
     `;
   }
 
   grid.innerHTML = html;
 
-  if (state.selectedDate) {
-    showSelectedDayEvents(state.selectedDate);
-  }
+  if (state.selectedDate) showSelectedDayEvents(state.selectedDate);
 }
 
 function showSelectedDayEvents(dateStr) {
@@ -249,27 +264,57 @@ function selectDay(dateStr) {
   showSelectedDayEvents(dateStr);
 }
 
+function setupBillRepeatFields() {
+  const repeatType = document.getElementById("billRepeatType");
+  const repeatDay = document.getElementById("billRepeatDay");
+  const repeatMonthDay = document.getElementById("billRepeatMonthDay");
+
+  repeatType.addEventListener("change", () => {
+    if (repeatType.value === "weekly") {
+      repeatDay.style.display = "block";
+      repeatMonthDay.style.display = "none";
+    } else if (repeatType.value === "monthly") {
+      repeatDay.style.display = "none";
+      repeatMonthDay.style.display = "block";
+    } else {
+      repeatDay.style.display = "none";
+      repeatMonthDay.style.display = "none";
+    }
+  });
+}
+
 function addBill() {
   const name = document.getElementById("billName").value.trim();
   const amount = document.getElementById("billAmount").value.trim();
   const dueDate = document.getElementById("billDueDate").value;
+  const repeatType = document.getElementById("billRepeatType").value;
+  const repeatDay = document.getElementById("billRepeatDay").value;
+  const repeatMonthDay = document.getElementById("billRepeatMonthDay").value;
 
-  if (!name || !amount || !dueDate) return alert("Please fill out all bill fields.");
+  if (!name || !amount || !dueDate) return alert("Please fill out bill name, amount, and due date.");
 
-  state.bills.push({
+  const bill = {
     id: getId(),
     name,
     amount,
     dueDate,
-    paid: false
-  });
+    paid: false,
+    repeatType
+  };
 
+  if (repeatType === "weekly") bill.repeatDay = Number(repeatDay);
+  if (repeatType === "monthly") bill.repeatMonthDay = Number(repeatMonthDay);
+
+  state.bills.push(bill);
   saveState();
   renderAll();
 
   document.getElementById("billName").value = "";
   document.getElementById("billAmount").value = "";
   document.getElementById("billDueDate").value = "";
+  document.getElementById("billRepeatType").value = "one-time";
+  document.getElementById("billRepeatDay").style.display = "none";
+  document.getElementById("billRepeatMonthDay").style.display = "none";
 }
 
 function toggleBillPaid(id) {
@@ -313,12 +358,7 @@ function addEvent() {
 
   if (!date || !text) return alert("Please fill out both event fields.");
 
-  state.events.push({
-    id: getId(),
-    date,
-    text
-  });
-
+  state.events.push({ id: getId(), date, text });
   saveState();
   renderAll();
 
@@ -353,13 +393,10 @@ function addReminder() {
   const text = document.getElementById("reminderText").value.trim();
   if (!text) return alert("Please type a reminder.");
 
-  state.reminders.push({
-    id: getId(),
-    text
-  });
-
+  state.reminders.push({ id: getId(), text });
   saveState();
   renderAll();
+
   document.getElementById("reminderText").value = "";
 }
 
@@ -389,10 +426,7 @@ function addRecurringTask() {
 
   if (!text) return alert("Please enter a task name.");
 
-  if (type === "weekly" && day === "") {
-    return alert("Please choose a day of the week.");
-  }
-
+  if (type === "weekly" && day === "") return alert("Please choose a day of the week.");
   if (type === "monthly" && (!monthDay || monthDay < 1 || monthDay > 31)) {
     return alert("Please enter a valid day of the month from 1 to 31.");
   }
@@ -440,9 +474,24 @@ function nextMonth() {
 
 function resetData() {
   if (!confirm("Are you sure you want to delete all data?")) return;
-
   localStorage.removeItem(STORAGE_KEY);
   location.reload();
+}
+
+function sparkleEffect() {
+  const container = document.getElementById("sparkles");
+
+  for (let i = 0; i < 20; i++) {
+    const sparkle = document.createElement("div");
+    sparkle.className = "sparkle";
+    sparkle.style.left = Math.random() * 100 + "vw";
+    sparkle.style.top = (60 + Math.random() * 30) + "vh";
+    sparkle.style.animationDuration = (1.5 + Math.random() * 1.5) + "s";
+    sparkle.style.transform = `scale(${0.5 + Math.random()})`;
+    container.appendChild(sparkle);
+
+    setTimeout(() => sparkle.remove(), 3000);
+  }
 }
 
 function initTabs() {
@@ -484,6 +533,7 @@ function initButtons() {
     setTheme();
   });
   document.getElementById("resetBtn").addEventListener("click", resetData);
+  document.getElementById("sparkleBtn").addEventListener("click", sparkleEffect);
 }
 
 function init() {
@@ -491,6 +541,7 @@ function init() {
   initTabs();
   initFilters();
   initButtons();
+  setupBillRepeatFields();
 
   if (!state.selectedDate) {
     state.selectedDate = new Date().toISOString().split("T")[0];
@@ -499,5 +550,7 @@ function init() {
   renderAll();
   showSelectedDayEvents(state.selectedDate);
 }
+
+init();
 
 init();
