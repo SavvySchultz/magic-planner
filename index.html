@@ -14,7 +14,9 @@
       <div>
         <p class="subtitle">✨ A magical planner for your real life ✨</p>
         <h1>Magic Planner</h1>
-        <p class="description">Track bills, school/work assignments, reminders, and monthly goals in one enchanted place.</p>
+        <p class="description">
+          Track bills, school/work assignments, reminders, and recurring tasks in one enchanted place.
+        </p>
       </div>
       <div class="hero-card">
         <p id="todayDate"></p>
@@ -27,6 +29,7 @@
       <button class="tab-btn" data-tab="bills">Bills</button>
       <button class="tab-btn" data-tab="calendar">Calendar</button>
       <button class="tab-btn" data-tab="reminders">Reminders</button>
+      <button class="tab-btn" data-tab="recurring">Recurring Tasks</button>
       <button class="tab-btn" data-tab="settings">Settings</button>
     </nav>
 
@@ -117,6 +120,37 @@
         <ul id="reminderList" class="item-list"></ul>
       </section>
 
+      <!-- RECURRING TASKS -->
+      <section class="tab-content" id="recurring">
+        <h2>Recurring Tasks</h2>
+
+        <div class="card">
+          <div class="form-grid">
+            <input type="text" id="recurringText" placeholder="Task name" />
+
+            <select id="recurringType">
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+
+            <select id="recurringDay">
+              <option value="0">Sunday</option>
+              <option value="1">Monday</option>
+              <option value="2">Tuesday</option>
+              <option value="3">Wednesday</option>
+              <option value="4">Thursday</option>
+              <option value="5">Friday</option>
+              <option value="6">Saturday</option>
+            </select>
+
+            <input type="number" id="recurringMonthDay" placeholder="Monthly day (1-31)" min="1" max="31" />
+            <button class="primary-btn" id="addRecurringBtn">Add Recurring Task</button>
+          </div>
+        </div>
+
+        <ul id="recurringList" class="item-list"></ul>
+      </section>
+
       <!-- SETTINGS -->
       <section class="tab-content" id="settings">
         <h2>Settings</h2>
@@ -128,7 +162,7 @@
 
         <div class="card danger-card">
           <h3>Reset Everything</h3>
-          <p>This will delete all bills, events, and reminders saved on this device.</p>
+          <p>This will delete all bills, events, reminders, and recurring tasks saved on this device.</p>
           <button class="danger-btn" id="resetBtn">Reset Data</button>
         </div>
       </section>
