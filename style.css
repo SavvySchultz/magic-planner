@@ -160,7 +160,7 @@ h1 {
   gap: 12px;
 }
 
-input {
+input, select {
   width: 100%;
   padding: 12px;
   border-radius: 14px;
@@ -169,7 +169,8 @@ input {
   color: #333;
 }
 
-body.dark input {
+body.dark input,
+body.dark select {
   background: rgba(255,255,255,0.08);
   color: var(--text);
 }
