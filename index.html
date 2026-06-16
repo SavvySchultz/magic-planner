@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="background-stars"></div>
+  <div class="sparkles" id="sparkles"></div>
 
   <div class="app">
     <header class="hero">
@@ -15,12 +15,13 @@
         <p class="subtitle">✨ A magical planner for your real life ✨</p>
         <h1>Magic Planner</h1>
         <p class="description">
-          Track bills, school/work assignments, reminders, and recurring tasks in one enchanted place.
+          Track bills, recurring bills, assignments, reminders, and recurring tasks in one enchanted place.
         </p>
       </div>
       <div class="hero-card">
         <p id="todayDate"></p>
         <p id="motivationalQuote"></p>
+        <button class="secondary-btn cute-btn" id="sparkleBtn">Add Sparkles ✨</button>
       </div>
     </header>
 
@@ -57,6 +58,14 @@
               <div id="progressFill"></div>
             </div>
           </div>
+          <div class="card cute-card">
+            <h3>Today’s Magical Task</h3>
+            <p id="dailyTask"></p>
+          </div>
+          <div class="card cute-card">
+            <h3>Quote of the Day</h3>
+            <p id="dailyQuote"></p>
+          </div>
         </div>
       </section>
 
@@ -64,11 +73,32 @@
       <section class="tab-content" id="bills">
         <h2>Monthly Bills</h2>
 
-        <div class="form-grid">
-          <input type="text" id="billName" placeholder="Bill name" />
-          <input type="number" id="billAmount" placeholder="Amount" />
-          <input type="date" id="billDueDate" />
-          <button class="primary-btn" id="addBillBtn">Add Bill</button>
+        <div class="card">
+          <div class="form-grid">
+            <input type="text" id="billName" placeholder="Bill name" />
+            <input type="number" id="billAmount" placeholder="Amount" />
+            <input type="date" id="billDueDate" />
+
+            <select id="billRepeatType">
+              <option value="one-time">One-time</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+
+            <select id="billRepeatDay" style="display:none;">
+              <option value="0">Sunday</option>
+              <option value="1">Monday</option>
+              <option value="2">Tuesday</option>
+              <option value="3">Wednesday</option>
+              <option value="4">Thursday</option>
+              <option value="5">Friday</option>
+              <option value="6">Saturday</option>
+            </select>
+
+            <input type="number" id="billRepeatMonthDay" placeholder="Day of month (1-31)" min="1" max="31" style="display:none;" />
+
+            <button class="primary-btn" id="addBillBtn">Add Bill</button>
+          </div>
         </div>
 
         <div class="filters">
@@ -112,9 +142,11 @@
       <section class="tab-content" id="reminders">
         <h2>Reminders</h2>
 
-        <div class="form-grid">
-          <input type="text" id="reminderText" placeholder="Type a reminder" />
-          <button class="primary-btn" id="addReminderBtn">Add Reminder</button>
+        <div class="card">
+          <div class="form-grid">
+            <input type="text" id="reminderText" placeholder="Type a reminder" />
+            <button class="primary-btn" id="addReminderBtn">Add Reminder</button>
+          </div>
         </div>
 
         <ul id="reminderList" class="item-list"></ul>
@@ -158,6 +190,11 @@
         <div class="card">
           <h3>Theme</h3>
           <button class="secondary-btn" id="toggleThemeBtn">Toggle Dark / Light</button>
+        </div>
+
+        <div class="card">
+          <h3>Fun Extras</h3>
+          <p>Press the sparkle button for a magical surprise effect.</p>
         </div>
 
         <div class="card danger-card">
