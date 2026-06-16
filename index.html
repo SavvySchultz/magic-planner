@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Magic Planner</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="background-stars"></div>
+
+  <div class="app">
+    <header class="hero">
+      <div>
+        <p class="subtitle">✨ A magical planner for your real life ✨</p>
+        <h1>Magic Planner</h1>
+        <p class="description">Track bills, school/work assignments, reminders, and monthly goals in one enchanted place.</p>
+      </div>
+      <div class="hero-card">
+        <p id="todayDate"></p>
+        <p id="motivationalQuote"></p>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+      <button class="tab-btn" data-tab="bills">Bills</button>
+      <button class="tab-btn" data-tab="calendar">Calendar</button>
+      <button class="tab-btn" data-tab="reminders">Reminders</button>
+      <button class="tab-btn" data-tab="settings">Settings</button>
+    </nav>
+
+    <main>
+      <!-- DASHBOARD -->
+      <section class="tab-content active" id="dashboard">
+        <h2>Dashboard</h2>
+        <div class="dashboard-grid">
+          <div class="card">
+            <h3>Upcoming Bills</h3>
+            <ul id="dashboardBills" class="compact-list"></ul>
+          </div>
+          <div class="card">
+            <h3>Upcoming Events</h3>
+            <ul id="dashboardEvents" class="compact-list"></ul>
+          </div>
+          <div class="card">
+            <h3>Reminders</h3>
+            <ul id="dashboardReminders" class="compact-list"></ul>
+          </div>
+          <div class="card">
+            <h3>Progress</h3>
+            <p id="progressText"></p>
+            <div class="progress-bar">
+              <div id="progressFill"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BILLS -->
+      <section class="tab-content" id="bills">
+        <h2>Monthly Bills</h2>
+
+        <div class="form-grid">
+          <input type="text" id="billName" placeholder="Bill name" />
+          <input type="number" id="billAmount" placeholder="Amount" />
+          <input type="date" id="billDueDate" />
+          <button class="primary-btn" id="addBillBtn">Add Bill</button>
+        </div>
+
+        <div class="filters">
+          <button class="filter-btn active" data-filter="all-bills">All</button>
+          <button class="filter-btn" data-filter="paid">Paid</button>
+          <button class="filter-btn" data-filter="unpaid">Unpaid</button>
+        </div>
+
+        <ul id="billList" class="item-list"></ul>
+      </section>
+
+      <!-- CALENDAR -->
+      <section class="tab-content" id="calendar">
+        <h2>Calendar / Assignments</h2>
+
+        <div class="calendar-toolbar">
+          <button class="secondary-btn" id="prevMonthBtn">←</button>
+          <h3 id="monthLabel"></h3>
+          <button class="secondary-btn" id="nextMonthBtn">→</button>
+        </div>
+
+        <div id="calendarGrid" class="calendar-grid"></div>
+
+        <div class="card">
+          <h3>Add Event / Assignment</h3>
+          <div class="form-grid">
+            <input type="date" id="eventDate" />
+            <input type="text" id="eventText" placeholder="Work / school assignment" />
+            <button class="primary-btn" id="addEventBtn">Add Event</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Events for Selected Day</h3>
+          <p id="selectedDayLabel">Click a day on the calendar.</p>
+          <ul id="selectedDayEvents" class="item-list"></ul>
+        </div>
+      </section>
+
+      <!-- REMINDERS -->
+      <section class="tab-content" id="reminders">
+        <h2>Reminders</h2>
+
+        <div class="form-grid">
+          <input type="text" id="reminderText" placeholder="Type a reminder" />
+          <button class="primary-btn" id="addReminderBtn">Add Reminder</button>
+        </div>
+
+        <ul id="reminderList" class="item-list"></ul>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="tab-content" id="settings">
+        <h2>Settings</h2>
+
+        <div class="card">
+          <h3>Theme</h3>
+          <button class="secondary-btn" id="toggleThemeBtn">Toggle Dark / Light</button>
+        </div>
+
+        <div class="card danger-card">
+          <h3>Reset Everything</h3>
+          <p>This will delete all bills, events, and reminders saved on this device.</p>
+          <button class="danger-btn" id="resetBtn">Reset Data</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
